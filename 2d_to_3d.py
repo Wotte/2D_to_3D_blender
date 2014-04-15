@@ -203,17 +203,3 @@ def unregister():
 if __name__ == "__main__":
  register()
 
-
-#######################################
-#if colorF != colorP and first == True:
-    #matF = bpy.data.materials.new('MaterialF')
-    #matF.diffuse_color = colorF
-    #bpy.context.object.data.materials.append(matF)
-    #bpy.context.object.active_material_index = 1
-    #bpy.ops.object.editmode_toggle()
-    #bpy.ops.mesh.select_all(action='DESELECT')
-    #bm = bmesh.from_edit_mesh(bpy.context.object.data)
-    #bm.select_mode = {'FACE'}
-    #bm.faces[2].select_set(True)
-    #bpy.ops.object.material_slot_assign()
-    #bpy.ops.object.editmode_toggle()
