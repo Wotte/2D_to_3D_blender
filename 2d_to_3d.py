@@ -1,6 +1,6 @@
 bl_info = {
  "name": "2D to 3D",
- "author": "Anthony Lefebvre (Wasta)",
+ "author": "Anthony Lefebvre (Wotte)",
  "version": (0, 1),
  "blender": (2, 5, 9),
  "location": "View3D > Object > 2D to 3D",
