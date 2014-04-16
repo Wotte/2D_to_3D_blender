@@ -69,8 +69,8 @@ class create_object():
             self.listNumPixY = range(0,self.hauteur+2)
             self.numPix1 = 0
             self.numPixMax1 = (self.hauteur+2)*(self.largeur+2)
-            self.couleurPix2 = self.imageBord1.load()
-            self.couleurPix1 = self.imageBord2.load()
+            self.couleurPix1 = self.imageBord1.load()
+            self.couleurPix2 = self.imageBord2.load()
             self.add_cube = bpy.ops.mesh.primitive_cube_add
             self.contour = False
             self.ok = False
