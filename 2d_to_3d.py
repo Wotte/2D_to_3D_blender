@@ -156,6 +156,7 @@ bpy.types.Scene.Front_Image = bpy.props.StringProperty(name = 'Front_Image',subt
 bpy.types.Scene.Profil_Image = bpy.props.StringProperty(name = 'Profil_Image',subtype="FILE_PATH")
 bpy.types.Scene.Name = bpy.props.StringProperty(subtype="FILE_NAME")
 bpy.types.Scene.Effect = bpy.props.BoolProperty(name = 'effect')
+bpy.types.Scene.Remove_Doubles = bpy.props.BoolProperty(name = 'Remove_doubles')
 bpy.types.Scene.Font = bpy.props.IntVectorProperty(name = 'RGB',min=0,max=255)
 ##### Class panel #####
 class tool_props_panel(bpy.types.Panel):
@@ -168,6 +169,7 @@ class tool_props_panel(bpy.types.Panel):
         self.layout.prop(bpy.context.scene, 'Profil_Image')
         self.layout.prop(bpy.context.scene, 'Font')
         self.layout.prop(bpy.context.scene, 'Effect')
+        self.layout.prop(bpy.context.scene, 'Remove_Doubles')
         self.layout.operator('2dto.3d', text = 'Create').bu_ok
         
         
@@ -187,6 +189,10 @@ class create_3d_object(bpy.types.Operator):
         ob_3d.start()
 
         ##### Extra #####
+        if bpy.data.scenes["Scene"].Remove_Doubles==True:
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.mesh.remove_doubles()
+            bpy.ops.object.editmode_toggle()
         if bpy.data.scenes["Scene"].Effect==True:
             bpy.ops.object.editmode_toggle()
             bpy.ops.mesh.subdivide(number_cuts=5,smoothness=0, fractal=0.5)
