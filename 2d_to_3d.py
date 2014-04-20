@@ -10,7 +10,7 @@ bl_info = {
  "tracker_url": "",
  "category": "Object"}
 #### Import module ####
-
+import time
 from PIL import Image
 import bpy
 import bmesh
@@ -19,13 +19,11 @@ from math import floor
 ############################################################################################
 # Class for create the 3d object                                                           #
 class create_object():
-        #Property Images
         def __init__(self,dir_front,dir_profil,RGB):
             self.dir_front = dir_front
             self.dir_profil = dir_profil
             self.RGB = RGB
             self.font = (self.RGB[0],self.RGB[1],self.RGB[2])
-        
             self.im1 = Image.open(r'{}'.format(self.dir_front))
             self.im2 = Image.open(r'{}'.format(self.dir_profil))
             self.largeur, self.hauteur = self.im1.size
@@ -74,31 +72,28 @@ class create_object():
             self.add_cube = bpy.ops.mesh.primitive_cube_add
             self.contour = False
             self.ok = False
-            self.first = True
             self.ok2 = False
-            #global listNumPixX2, contour, ok, couleurPix2, font, add_cube, mylayers, first, ok2
-        
+            font = self.font
+            global font
         def contour2(self,y1,x1):
-            #global ok
-            for h in self.listNumPixX2:
-                if self.couleurPix2[h,y1] == self.font:
+            listNumPixX2 = self.listNumPixX2
+            couleurPix2 = self.couleurPix2
+            contour = self.contour
+            couleurPix1 = self.couleurPix1
+            for h in listNumPixX2:
+                if couleurPix2[h,y1] == font:
                     pass
-                elif self.contour == True:
-                    self.add_cube(radius=0.1,location=(x1-((x1-1)*0.8), h-((h-1)*0.8),\
-                     y1-((y1-1)*0.8)), layers=self.mylayers)
+                elif contour == True:
+                    self.add_cube(radius=0.1,location=(x1-((x1-1)*0.8), h-((h-1)*0.8), y1-((y1-1)*0.8)), layers=self.mylayers)
                     self.ok = True
-                elif self.couleurPix2[h+1,y1] == self.font or self.couleurPix2[h-1,y1] == self.font or\
-                 self.couleurPix2[h,y1+1] == self.font or self.couleurPix2[h,y1-1] == self.font:
-                    self.add_cube(radius=0.1,location=(x1-((x1-1)*0.8), h-((h-1)*0.8)\
-                    , y1-((y1-1)*0.8)), layers=self.mylayers)
+                elif couleurPix2[h+1,y1] == font or couleurPix2[h-1,y1] == font or couleurPix2[h,y1+1] == font or couleurPix2[h,y1-1] == font:
+                    self.add_cube(radius=0.1,location=(x1-((x1-1)*0.8), h-((h-1)*0.8), y1-((y1-1)*0.8)), layers=self.mylayers)
                     self.ok = True
                 else:
                     pass
                 if self.ok == True:
-                        colorP = ( round(((self.couleurPix2[h,y1][0])/255),4),\
-                        round(((self.couleurPix2[h,y1][1])/255),4),round(((self.couleurPix2[h,y1][2])/255),4) )
-                        colorF = ( round(((self.couleurPix1[x1,y1][0])/255),4),\
-                        round(((self.couleurPix1[x1,y1][1])/255),4),round(((self.couleurPix1[x1,y1][2])/255),4) )
+                        colorP = ( round(((couleurPix2[h,y1][0])/255),4),round(((couleurPix2[h,y1][1])/255),4),round(((couleurPix2[h,y1][2])/255),4) )
+                        colorF = ( round(((couleurPix1[x1,y1][0])/255),4),round(((couleurPix1[x1,y1][1])/255),4),round(((couleurPix1[x1,y1][2])/255),4) )
                         if len(bpy.data.materials.values()) == 0:
                             mat = bpy.data.materials.new('Material')
                             mat.diffuse_color = colorP
@@ -125,14 +120,13 @@ class create_object():
                     
         def start(self):
             while self.numPix1 != self.numPixMax1:
+                couleurPix1 = self.couleurPix1
                 for t in self.listNumPixY:#t=y1
                     for g in self.listNumPixX:#g=x1
-                        self.first = True
-                        if self.couleurPix1[g,t] == self.font:
+                        if couleurPix1[g,t] == font:
                             self.numPix1 += 1
                         else:
-                            if self.couleurPix1[g+1,t] == self.font or self.couleurPix1[g-1,t] == self.font \
-                            or self.couleurPix1[g,t+1] == self.font or self.couleurPix1[g,t-1] == self.font:
+                            if couleurPix1[g+1,t] == font or couleurPix1[g-1,t] == font or couleurPix1[g,t+1] == font or couleurPix1[g,t-1] == font:
                                 self.contour = True
                             self.numPix1 += 1
                             self.contour2(t,g)
@@ -152,24 +146,28 @@ class create_object():
 
 
 ########## For Panel ##############
-bpy.types.Scene.Front_Image = bpy.props.StringProperty(name = 'Front_Image',subtype="FILE_PATH")
-bpy.types.Scene.Profil_Image = bpy.props.StringProperty(name = 'Profil_Image',subtype="FILE_PATH")
-bpy.types.Scene.Name = bpy.props.StringProperty(subtype="FILE_NAME")
-bpy.types.Scene.Effect = bpy.props.BoolProperty(name = 'effect')
-bpy.types.Scene.Remove_Doubles = bpy.props.BoolProperty(name = 'Remove_doubles')
-bpy.types.Scene.Font = bpy.props.IntVectorProperty(name = 'RGB',min=0,max=255)
+Scene = bpy.types.Scene
+props = bpy.props
+Scene.Front_Image = props.StringProperty(name = 'Front_Image',subtype="FILE_PATH")
+Scene.Profil_Image = props.StringProperty(name = 'Profil_Image',subtype="FILE_PATH")
+Scene.Name = props.StringProperty(subtype="FILE_NAME")
+Scene.Effect = props.BoolProperty(name = 'effect')
+Scene.Remove_Doubles_Faces = props.BoolProperty(name = 'Remove_doubles_faces')
+Scene.Font = props.IntVectorProperty(name = 'RGB',min=0,max=255)
 ##### Class panel #####
 class tool_props_panel(bpy.types.Panel):
     bl_label = "2D to 3D properties"
     bl_space_type = "VIEW_3D"
     bl_region_type = "TOOL_PROPS"
     def draw(self, context):
-        self.layout.prop(bpy.context.scene, 'Name')
-        self.layout.prop(bpy.context.scene, 'Front_Image')
-        self.layout.prop(bpy.context.scene, 'Profil_Image')
-        self.layout.prop(bpy.context.scene, 'Font')
-        self.layout.prop(bpy.context.scene, 'Effect')
-        self.layout.prop(bpy.context.scene, 'Remove_Doubles')
+        prop = self.layout.prop
+        scene = bpy.context.scene
+        prop(scene, 'Name')
+        prop(scene, 'Front_Image')
+        prop(scene, 'Profil_Image')
+        prop(scene, 'Font')
+        prop(scene, 'Effect')
+        prop(scene, 'Remove_Doubles_Faces')
         self.layout.operator('2dto.3d', text = 'Create').bu_ok
         
         
@@ -179,6 +177,7 @@ class create_3d_object(bpy.types.Operator):
     bl_label = "2D to 3D"
     bu_ok = bpy.props.StringProperty()
     def execute(self, context):
+        tp1 = time.clock()
         ##### Get values of panel #####
         dir_front = bpy.data.scenes["Scene"].Front_Image
         dir_profil = bpy.data.scenes["Scene"].Profil_Image
@@ -189,9 +188,12 @@ class create_3d_object(bpy.types.Operator):
         ob_3d.start()
 
         ##### Extra #####
-        if bpy.data.scenes["Scene"].Remove_Doubles==True:
+        if bpy.data.scenes["Scene"].Remove_Doubles_Faces==True:
             bpy.ops.object.editmode_toggle()
             bpy.ops.mesh.remove_doubles()
+            #bpy.ops.mesh.select_all(action='TOGGLE')
+            #bpy.ops.mesh.select_interior_faces()
+            #bpy.ops.mesh.delete(type='ONLY_FACE')
             bpy.ops.object.editmode_toggle()
         if bpy.data.scenes["Scene"].Effect==True:
             bpy.ops.object.editmode_toggle()
@@ -199,6 +201,8 @@ class create_3d_object(bpy.types.Operator):
             bpy.ops.mesh.subdivide(number_cuts=1,smoothness=1)
             bpy.ops.object.editmode_toggle()
         bpy.context.object.name = bpy.context.scene.Name
+        tp2 = time.clock()
+        print(tp2-tp1)
         return{'FINISHED'}
 def register():
     bpy.utils.register_module(__name__)
