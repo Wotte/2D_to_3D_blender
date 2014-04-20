@@ -19,10 +19,11 @@ from math import floor
 ############################################################################################
 # Class for create the 3d object                                                           #
 class create_object():
-        def __init__(self,dir_front,dir_profil,RGB):
+        def __init__(self,dir_front,dir_profil,RGB,rad):
             self.dir_front = dir_front
             self.dir_profil = dir_profil
             self.RGB = RGB
+            self.rad = rad
             self.font = (self.RGB[0],self.RGB[1],self.RGB[2])
             self.im1 = Image.open(r'{}'.format(self.dir_front))
             self.im2 = Image.open(r'{}'.format(self.dir_profil))
@@ -59,6 +60,7 @@ class create_object():
             for y in range(self.hauteur2+2):
                 self.imageBord2.putpixel((self.largeur2+1,y),self.font)
             ##############End of create edge##################
+            self.nbpos = 8*self.rad
         
             self.mylayers = [False]*20
             self.mylayers[0] = True
@@ -80,14 +82,16 @@ class create_object():
             couleurPix2 = self.couleurPix2
             contour = self.contour
             couleurPix1 = self.couleurPix1
+            nbpos = self.nbpos
+            rad = self.rad
             for h in listNumPixX2:
                 if couleurPix2[h,y1] == font:
                     pass
                 elif contour == True:
-                    self.add_cube(radius=0.1,location=(x1-((x1-1)*0.8), h-((h-1)*0.8), y1-((y1-1)*0.8)), layers=self.mylayers)
+                    self.add_cube(radius=rad,location=(((x1-(x1-1))+(nbpos/4)*x1), ((h-(h-1))+(nbpos/4)*h), ((y1-(y1-1))+(nbpos/4)*y1)), layers=self.mylayers)
                     self.ok = True
                 elif couleurPix2[h+1,y1] == font or couleurPix2[h-1,y1] == font or couleurPix2[h,y1+1] == font or couleurPix2[h,y1-1] == font:
-                    self.add_cube(radius=0.1,location=(x1-((x1-1)*0.8), h-((h-1)*0.8), y1-((y1-1)*0.8)), layers=self.mylayers)
+                    self.add_cube(radius=rad,location=(((x1-(x1-1))+(nbpos/4)*x1), ((h-(h-1))+(nbpos/4)*h), ((y1-(y1-1))+(nbpos/4)*y1)), layers=self.mylayers)
                     self.ok = True
                 else:
                     pass
@@ -151,8 +155,9 @@ props = bpy.props
 Scene.Front_Image = props.StringProperty(name = 'Front_Image',subtype="FILE_PATH")
 Scene.Profil_Image = props.StringProperty(name = 'Profil_Image',subtype="FILE_PATH")
 Scene.Name = props.StringProperty(subtype="FILE_NAME")
+Scene.Radius = props.FloatProperty(name = 'Radius', max=0.1, min=0.0001, default=0.05, step=0.1,precision=4)
 Scene.Effect = props.BoolProperty(name = 'effect')
-Scene.Remove_Doubles_Faces = props.BoolProperty(name = 'Remove_doubles_faces')
+Scene.Remove_Doubles_Faces = props.BoolProperty(name = 'Remove_doubles')
 Scene.Font = props.IntVectorProperty(name = 'RGB',min=0,max=255)
 ##### Class panel #####
 class tool_props_panel(bpy.types.Panel):
@@ -166,6 +171,7 @@ class tool_props_panel(bpy.types.Panel):
         prop(scene, 'Front_Image')
         prop(scene, 'Profil_Image')
         prop(scene, 'Font')
+        prop(scene, 'Radius')
         prop(scene, 'Effect')
         prop(scene, 'Remove_Doubles_Faces')
         self.layout.operator('2dto.3d', text = 'Create').bu_ok
@@ -182,9 +188,10 @@ class create_3d_object(bpy.types.Operator):
         dir_front = bpy.data.scenes["Scene"].Front_Image
         dir_profil = bpy.data.scenes["Scene"].Profil_Image
         RGB = bpy.data.scenes["Scene"].Font
+        rad = bpy.data.scenes["Scene"].Radius
         
         ##### Call the create_object class #####
-        ob_3d = create_object(dir_front,dir_profil,RGB)
+        ob_3d = create_object(dir_front,dir_profil,RGB,rad)
         ob_3d.start()
 
         ##### Extra #####
