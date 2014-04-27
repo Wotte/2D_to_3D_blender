@@ -75,6 +75,8 @@ class create_object():
             self.contour = False
             self.ok = False
             self.ok2 = False
+            self.ok3 = True
+            self.first = False
             font = self.font
             global font
         def contour2(self,y1,x1):
@@ -84,6 +86,7 @@ class create_object():
             couleurPix1 = self.couleurPix1
             nbpos = self.nbpos
             rad = self.rad
+            self.first = True
             for h in listNumPixX2:
                 if couleurPix2[h,y1] == font:
                     pass
@@ -100,25 +103,51 @@ class create_object():
                         colorF = ( round(((couleurPix1[x1,y1][0])/255),4),round(((couleurPix1[x1,y1][1])/255),4),round(((couleurPix1[x1,y1][2])/255),4) )
                         if len(bpy.data.materials.values()) == 0:
                             mat = bpy.data.materials.new('Material')
-                            mat.diffuse_color = colorP
+                            if self.first == True:
+                                    print('ok')
+                                    mat.diffuse_color = colorF
+                                    
+                            else:
+                                    mat.diffuse_color = colorP
                             bpy.context.object.data.materials.append(mat)
+                            self.first = False
                         else:
-                            
-                            for m in bpy.data.materials:
+                            if self.first == True :
+                                    print('ok')
+                                    for m in bpy.data.materials:
                                 
-                                R = round(m.diffuse_color.r ,4)
-                                G = round(m.diffuse_color.g ,4)
-                                B = round(m.diffuse_color.b ,4)
+                                        R = round(m.diffuse_color.r ,4)
+                                        G = round(m.diffuse_color.g ,4)
+                                        B = round(m.diffuse_color.b ,4)
                                 
-                                if colorP[0] == R and colorP[1] == G and colorP[2] == B:
-                                    bpy.ops.object.material_slot_add()
-                                    bpy.context.object.material_slots[0].material = m
-                                    break
-                                
+                                        if colorF[0] == R and colorF[1] == G and colorF[2] == B:
+                                            bpy.ops.object.material_slot_add()
+                                            bpy.context.object.material_slots[0].material = m
+                                            self.ok3 = False
+                                            break
+                                    if self.ok3 == True:
+                                        mat = bpy.data.materials.new('Material0')
+                                        mat.diffuse_color = colorF
+                                        bpy.context.object.data.materials.append(mat)
+                                    self.first = False
+                                    self.ok3 = True
                             else :
-                                mat = bpy.data.materials.new('Material0')
-                                mat.diffuse_color = colorP
-                                bpy.context.object.data.materials.append(mat)
+                                    for m in bpy.data.materials:
+                                
+                                        R = round(m.diffuse_color.r ,4)
+                                        G = round(m.diffuse_color.g ,4)
+                                        B = round(m.diffuse_color.b ,4)
+                                
+                                        if colorP[0] == R and colorP[1] == G and colorP[2] == B:
+                                            bpy.ops.object.material_slot_add()
+                                            bpy.context.object.material_slots[0].material = m
+                                            break
+                                    if self.ok3 == True:
+                                        mat = bpy.data.materials.new('Material0')
+                                        mat.diffuse_color = colorP
+                                        bpy.context.object.data.materials.append(mat)
+                                    
+                                    self.ok3 = True
                             
                         self.ok = False
                     
